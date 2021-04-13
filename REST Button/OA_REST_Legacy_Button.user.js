@@ -1,13 +1,15 @@
 // ==UserScript==
-// @name         OA REST test v3
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @name         OA REST Button Legacy
+// @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
+// @version      0.2
 // @description  Inject OA REST button to /page/files and /Page/Projects and /Page/Users
 // @author       DZE
 // @match        *://*/page/files/*
 // @match        *://*/Page/Project?id=*
 // @match        *://*/Page/Users*
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/david-zeng-axomic/OpenAsset-Userscripts/main/REST%20Button/OA_REST_Legacy_Button.user.js
+// @downloadURL  https://raw.githubusercontent.com/david-zeng-axomic/OpenAsset-Userscripts/main/REST%20Button/OA_REST_Legacy_Button.user.js
 // @run-at      document-complete
 // ==/UserScript==
 

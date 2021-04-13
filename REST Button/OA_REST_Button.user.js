@@ -1,14 +1,16 @@
 // ==UserScript==
-// @name         OA REST test v4
-// @namespace    http://tampermonkey.net/
+// @name         OA REST Button
+// @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
 // @version      0.4
 // @description  Inject OA REST button to /page/projects and /page/employees
 // @author       DZE
 // @match        *://*/page/project/*
 // @match        *://*/page/employee/*
-// @require  http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
-// @require  https://gist.github.com/raw/2625891/waitForKeyElements.js
-// @grant    GM_addStyle
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
+// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
+// @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
+// @grant        GM_addStyle
 
 // @run-at      document-idle
 // ==/UserScript==
