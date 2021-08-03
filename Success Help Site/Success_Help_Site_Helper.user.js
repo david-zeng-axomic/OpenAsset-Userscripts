@@ -6,6 +6,8 @@
 // @author       You
 // @match        https://success.openasset.com/*
 // @icon         https://www.google.com/s2/favicons?domain=openasset.com
+// @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/Success%20Help%20Site/Success_Help_Site_Helper.user.js
+// @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/Success%20Help%20Site/Success_Help_Site_Helper.user.js
 // @grant        none
 // ==/UserScript==
 
