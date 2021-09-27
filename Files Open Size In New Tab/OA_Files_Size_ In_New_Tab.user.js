@@ -55,8 +55,8 @@
         test_3 = document.createElement('div');
         test_3.style['width'] = "20px";
         test_3.style['height'] = "20px";
-        test_3.style['background-color'] = "white";
-        test_3.style['color'] = "blue"; // not working ...
+        test_3.style['background-color'] = "black";
+        test_3.style['fill'] = "white";
         test_3.innerHTML = new_tab_button_str;
         test_2[0].append(test_3);
 
