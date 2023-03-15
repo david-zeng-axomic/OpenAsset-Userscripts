@@ -15,13 +15,13 @@
 (function() {
     'use strict';
 
-    const drowdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
-    const drowdownMenuSelector = drowdownRootSelector+" > div > div > div";
+    var dropdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
+    var dropdownMenuSelector = dropdownRootSelector+" > div > div > div";
 
     function dropdownObserverCallback(mutationList, observer) {
         for (const mutation of mutationList) {
             if (mutation.type === 'childList') {
-                var dropDown = document.querySelector(drowdownMenuSelector);
+                var dropDown = document.querySelector(dropdownMenuSelector);
                 insertJwtOption(dropDown);
             }
         }
@@ -63,12 +63,13 @@
             // initial check to return if the element already exists on page
             checkForElement(observer);
 
-/*             // timeout the observer after 5 seconds
+            // timeout the observer after 5 seconds
             timer = setTimeout(() => {
-                console.log("couldn't find: ", selector);
+                console.log("can't find: ", selector);
                 observer.disconnect();
-                reject('Stopping observation for element.');
-            }, 5000); */
+                // reject('Stopping observation');
+                return;
+            }, 5000);
         });
     }
 
@@ -98,35 +99,25 @@
 
 
     async function onUrlChange() {
-        /*        if (dropdownObserver){
-            console("disconnecting old dropdownObserver");
-            dropdownObserver.disconnect();
-        }
-         if (observer){
-            console("disconnecting old observer");
-            observer.disconnect();
-        } */
-
-        var test = await waitForElement(drowdownMenuSelector);
-        var dropDown = document.querySelector(drowdownMenuSelector);
+        await waitForElement(dropdownRootSelector);
+        var dropDown = document.querySelector(dropdownMenuSelector);
         insertJwtOption(dropDown);
 
-        // function dropdownObserverCallback(mutationList, observer) {
-        //     for (const mutation of mutationList) {
-        //         if (mutation.type === 'childList') {
-        //             dropDown = document.querySelector(drowdownMenuSelector);
-        //             insertJwtOption(dropDown);
-        //         }
-        //     }
-        // }
-        // var dropdownObserver = new MutationObserver(dropdownObserverCallback);
-        console.log("Observing Dropdown for JWT option", dropDown);
+        console.log("Observing Dropdown for JWT option");
 
         var dropdownObserverConfig = {childList: true};
-        dropdownObserver.disconnect();
-        var drowdownRoot = document.querySelector(drowdownRootSelector)
-        console.log("drowdownRoot", drowdownRoot);
-        dropdownObserver.observe(drowdownRoot, dropdownObserverConfig);
+        // dropdownObserver.disconnect();
+
+        // NOTE: 2023-03-14 - Before Search Phase 2
+        // For some odd reason a duplicate set of dropdowns exist when going from something like:
+        //     '/Page/Search' to '/page/projects'
+        // We need to consistently retrieve the last element
+
+        // var dropdownRootList = [...document.querySelectorAll(dropdownRootSelector)].at(-1)
+        // dropdownObserver.observe(dropdownRoot, dropdownObserverConfig);
+        var dropdownRootList = document.querySelectorAll(dropdownRootSelector)
+        var lastDropdownRootObj = dropdownRootList[dropdownRootList.length - 1];
+        dropdownObserver.observe(lastDropdownRootObj, dropdownObserverConfig);
     }
 
     function fireOnNavigation() {
@@ -134,7 +125,6 @@
 
         window.dispatchEvent(event);
         dropdownObserver.disconnect();
-        console.log("oberserver disconnect");
         onUrlChange();
     }
 
@@ -149,4 +139,5 @@
     window.addEventListener('popstate', () => {console.log("popstate"); fireOnNavigation()});
 
     fireOnNavigation();
+    
 })();
