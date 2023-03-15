@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         OA Client JWT
-// @namespace    http://tampermonkey.net/
+// @name         OA Get Client JWT
+// @namespace    openasset.com
 // @version      0.1
-// @description  try to take over the world!
+// @description  Adds an additonal user dropdown option that copys a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=openasset.com
@@ -67,7 +67,6 @@
             timer = setTimeout(() => {
                 console.log("can't find: ", selector);
                 observer.disconnect();
-                // reject('Stopping observation');
                 return;
             }, 5000);
         });
@@ -86,48 +85,39 @@
 
     async function insertJwtOption(dropDown) {
         if (dropDown){
-            if (!dropDown.querySelector("#jtw")) {
-                console.log("inserting JWT option");
-                var jwtTemp = dropDown.querySelector("button").cloneNode(true);
-                jwtTemp.id = "jwt"
-                jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
-                jwtTemp.onclick = function(){copyJwtToClipboard()};
-                dropDown.insertBefore(jwtTemp, dropDown.lastChild);
-            }
+            var jwtTemp = dropDown.querySelector("button").cloneNode(true);
+            jwtTemp.id = "jwt"
+            jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
+            jwtTemp.onclick = function(){copyJwtToClipboard()};
+            dropDown.insertBefore(jwtTemp, dropDown.lastChild);
         }
     }
 
-
     async function onUrlChange() {
+        // wait for dropdown to render
         await waitForElement(dropdownRootSelector);
         var dropDown = document.querySelector(dropdownMenuSelector);
-        insertJwtOption(dropDown);
 
-        console.log("Observing Dropdown for JWT option");
+        // NOTE from 2023-03-14 : Before Search Phase 2
+        // For some odd reason a duplicate set of dropdowns exist when going from certain pages.
+        // Like for example, From '/Page/Search' to '/page/projects'
+        // We need to consistently retrieve the last element to work around this
 
-        var dropdownObserverConfig = {childList: true};
-        // dropdownObserver.disconnect();
-
-        // NOTE: 2023-03-14 - Before Search Phase 2
-        // For some odd reason a duplicate set of dropdowns exist when going from something like:
-        //     '/Page/Search' to '/page/projects'
-        // We need to consistently retrieve the last element
-
-        // var dropdownRootList = [...document.querySelectorAll(dropdownRootSelector)].at(-1)
-        // dropdownObserver.observe(dropdownRoot, dropdownObserverConfig);
         var dropdownRootList = document.querySelectorAll(dropdownRootSelector)
         var lastDropdownRootObj = dropdownRootList[dropdownRootList.length - 1];
+
+        var dropdownObserverConfig = {childList: true};
         dropdownObserver.observe(lastDropdownRootObj, dropdownObserverConfig);
     }
 
     function fireOnNavigation() {
         const event = new CustomEvent('Navigation');
-
         window.dispatchEvent(event);
         dropdownObserver.disconnect();
         onUrlChange();
     }
 
+    // override history states to run script when url changes
     const pushState = history.pushState;
     history.pushState = function () {
         console.log("pushState");
@@ -139,5 +129,4 @@
     window.addEventListener('popstate', () => {console.log("popstate"); fireOnNavigation()});
 
     fireOnNavigation();
-    
 })();
