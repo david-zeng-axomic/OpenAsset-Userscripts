@@ -62,6 +62,13 @@
 
             // initial check to return if the element already exists on page
             checkForElement(observer);
+
+/*             // timeout the observer after 5 seconds
+            timer = setTimeout(() => {
+                console.log("couldn't find: ", selector);
+                observer.disconnect();
+                reject('Stopping observation for element.');
+            }, 5000); */
         });
     }
 
@@ -100,8 +107,9 @@
             observer.disconnect();
         } */
 
-        let test = await waitForElement(drowdownRootSelector);
+        var test = await waitForElement(drowdownMenuSelector);
         var dropDown = document.querySelector(drowdownMenuSelector);
+        insertJwtOption(dropDown);
 
         // function dropdownObserverCallback(mutationList, observer) {
         //     for (const mutation of mutationList) {
@@ -112,10 +120,12 @@
         //     }
         // }
         // var dropdownObserver = new MutationObserver(dropdownObserverCallback);
-        console.log("Observing Dropdown for JWT option:");
+        console.log("Observing Dropdown for JWT option", dropDown);
 
-        const dropdownObserverConfig = {childList: true};
+        var dropdownObserverConfig = {childList: true};
+        dropdownObserver.disconnect();
         var drowdownRoot = document.querySelector(drowdownRootSelector)
+        console.log("drowdownRoot", drowdownRoot);
         dropdownObserver.observe(drowdownRoot, dropdownObserverConfig);
     }
 
@@ -123,8 +133,7 @@
         const event = new CustomEvent('Navigation');
 
         window.dispatchEvent(event);
-        // dropdownObserver.disconnect();
-        // var dropdownObserver = new MutationObserver(dropdownObserverCallback);
+        dropdownObserver.disconnect();
         console.log("oberserver disconnect");
         onUrlChange();
     }
