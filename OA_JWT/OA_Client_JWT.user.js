@@ -2,7 +2,7 @@
 // @name         OA Get Client JWT
 // @namespace    openasset.com
 // @version      0.1
-// @description  Adds an additonal user dropdown option that copys a JWT to clipboard
+// @description  Adds an additional user dropdown option that copies a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=openasset.com
@@ -15,19 +15,12 @@
 (function() {
     'use strict';
 
+    // These may need to change if Front-End UI breaks from new update
     var dropdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
     var dropdownMenuSelector = dropdownRootSelector+" > div > div > div";
 
-    function dropdownObserverCallback(mutationList, observer) {
-        for (const mutation of mutationList) {
-            if (mutation.type === 'childList') {
-                var dropDown = document.querySelector(dropdownMenuSelector);
-                insertJwtOption(dropDown);
-            }
-        }
-    }
-    var dropdownObserver = new MutationObserver(dropdownObserverCallback);
 
+    // waits until selector element exists
     function waitForElement(selector = null, root = document) {
         return new Promise((resolve, reject) => {
             let timer;
@@ -72,6 +65,17 @@
         });
     }
 
+    // whenever dropdown menu changes, try to insert JWT button
+    function dropdownObserverCallback(mutationList, observer) {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                insertJwtButton();
+            }
+        }
+    }
+    var dropdownObserver = new MutationObserver(dropdownObserverCallback);
+
+    // makes REST api call to fetch JWT and saves to clipboard
     async function copyJwtToClipboard() {
         console.log("Fetching JWT:");
         fetch(`${window.location.origin}/REST/1/JWT?service.openasset=true&expiry=86400`)
@@ -83,29 +87,33 @@
         });
     }
 
-    async function insertJwtOption(dropDown) {
+    // creates OA JWT button in user dropdown menu
+    async function insertJwtButton() {
+        var dropDown = document.querySelector(dropdownMenuSelector);
         if (dropDown){
-            var jwtTemp = dropDown.querySelector("button").cloneNode(true);
-            jwtTemp.id = "jwt"
-            jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
-            jwtTemp.onclick = function(){copyJwtToClipboard()};
-            dropDown.insertBefore(jwtTemp, dropDown.lastChild);
+            if (!dropDown.querySelector("#jwtButton")){
+                var jwtButton = dropDown.querySelector("button").cloneNode(true);
+                jwtButton.id = "jwtButton"
+                jwtButton.querySelector("span:last-child").innerText = "OA JWT"
+                jwtButton.onclick = function(){copyJwtToClipboard()};
+
+                dropDown.insertBefore(jwtButton, dropDown.lastChild);
+            }
         }
     }
 
     async function onUrlChange() {
-        // wait for dropdown to render
+        // wait for dropdown to render before we can observer it
         await waitForElement(dropdownRootSelector);
-        var dropDown = document.querySelector(dropdownMenuSelector);
 
         // NOTE from 2023-03-14 : Before Search Phase 2
         // For some odd reason a duplicate set of dropdowns exist when going from certain pages.
         // Like for example, From '/Page/Search' to '/page/projects'
         // We need to consistently retrieve the last element to work around this
-
         var dropdownRootList = document.querySelectorAll(dropdownRootSelector)
         var lastDropdownRootObj = dropdownRootList[dropdownRootList.length - 1];
 
+        // create observer for dropdown to wait for it to be clicked
         var dropdownObserverConfig = {childList: true};
         dropdownObserver.observe(lastDropdownRootObj, dropdownObserverConfig);
     }
