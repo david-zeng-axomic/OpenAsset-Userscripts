@@ -18,6 +18,16 @@
     const drowdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
     const drowdownMenuSelector = drowdownRootSelector+" > div > div > div";
 
+    function dropdownObserverCallback(mutationList, observer) {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                var dropDown = document.querySelector(drowdownMenuSelector);
+                insertJwtOption(dropDown);
+            }
+        }
+    }
+    var dropdownObserver = new MutationObserver(dropdownObserverCallback);
+
     function waitForElement(selector = null, root = document) {
         return new Promise((resolve, reject) => {
             let timer;
@@ -68,30 +78,40 @@
 
     async function insertJwtOption(dropDown) {
         if (dropDown){
-            console.log("inserting JWT option");
-            var jwtTemp = dropDown.querySelector("button").cloneNode(true);
-            jwtTemp.id = "jwt"
-            jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
-            jwtTemp.onclick = function(){copyJwtToClipboard()};
-            dropDown.insertBefore(jwtTemp, dropDown.lastChild);
+            if (!dropDown.querySelector("#jtw")) {
+                console.log("inserting JWT option");
+                var jwtTemp = dropDown.querySelector("button").cloneNode(true);
+                jwtTemp.id = "jwt"
+                jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
+                jwtTemp.onclick = function(){copyJwtToClipboard()};
+                dropDown.insertBefore(jwtTemp, dropDown.lastChild);
+            }
         }
     }
 
 
     async function onUrlChange() {
+        /*        if (dropdownObserver){
+            console("disconnecting old dropdownObserver");
+            dropdownObserver.disconnect();
+        }
+         if (observer){
+            console("disconnecting old observer");
+            observer.disconnect();
+        } */
 
         let test = await waitForElement(drowdownRootSelector);
         var dropDown = document.querySelector(drowdownMenuSelector);
 
-        function dropdownObserverCallback(mutationList, observer) {
-            for (const mutation of mutationList) {
-                if (mutation.type === 'childList') {
-                    dropDown = document.querySelector(drowdownMenuSelector);
-                    insertJwtOption(dropDown);
-                }
-            }
-        }
-        const dropdownObserver = new MutationObserver(dropdownObserverCallback);
+        // function dropdownObserverCallback(mutationList, observer) {
+        //     for (const mutation of mutationList) {
+        //         if (mutation.type === 'childList') {
+        //             dropDown = document.querySelector(drowdownMenuSelector);
+        //             insertJwtOption(dropDown);
+        //         }
+        //     }
+        // }
+        // var dropdownObserver = new MutationObserver(dropdownObserverCallback);
         console.log("Observing Dropdown for JWT option:");
 
         const dropdownObserverConfig = {childList: true};
@@ -99,5 +119,25 @@
         dropdownObserver.observe(drowdownRoot, dropdownObserverConfig);
     }
 
-    onUrlChange();
+    function fireOnNavigation() {
+        const event = new CustomEvent('Navigation');
+
+        window.dispatchEvent(event);
+        // dropdownObserver.disconnect();
+        // var dropdownObserver = new MutationObserver(dropdownObserverCallback);
+        console.log("oberserver disconnect");
+        onUrlChange();
+    }
+
+    const pushState = history.pushState;
+    history.pushState = function () {
+        console.log("pushState");
+        var tempPushState = pushState.apply(history, arguments)
+        fireOnNavigation();
+        return tempPushState;
+    }
+
+    window.addEventListener('popstate', () => {console.log("popstate"); fireOnNavigation()});
+
+    fireOnNavigation();
 })();
