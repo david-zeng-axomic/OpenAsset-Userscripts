@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Get Client JWT
 // @namespace    openasset.com
-// @version      0.1
+// @version      0.2
 // @description  Adds an additional user dropdown option that copies a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
