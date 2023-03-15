@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA REST Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
-// @version      0.4
+// @version      0.5
 // @description  Inject OA REST button to /page/projects and /page/employees
 // @author       DZE
 // @match        *://*/page/project/*
@@ -34,7 +34,7 @@
     } else if (window.location.href.includes("/page/employee/")){
         url_split = window.location.href.split("/page/employee/");
         rest_endpoint = 'Employees';
-        buttons_class_string = '_3p2ELBWrCGJ7u9YnvzQPGJ';
+        buttons_class_string = '_1KR4uOJTCX2WL2RLHNvC8i';
     }
 
     waitForKeyElements ('.'+buttons_class_string, actionFunction);
@@ -48,7 +48,6 @@
         clone.href = url_split[0] + '/REST/1/'+rest_endpoint+'/' + url_split[1].split('/')[0];
         clone.dataset.title = "REST";
         clone.innerText = "REST";
-        clone.className = clone.className.split(' ')[0];
         clone.style.removeProperty('border');
         placeHolder.append(clone);
     }
