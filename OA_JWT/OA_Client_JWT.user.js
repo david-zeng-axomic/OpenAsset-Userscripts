@@ -3,17 +3,21 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
-// @author       You
+// @author       DZE
 // @match        https://*.openasset.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=openasset.com
 // @grant        none
+// @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/OA_JWT/OA_Client_JWT.user.js
+// @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/OA_JWT/OA_Client_JWT.user.js
 // @run-at       document-idle
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    // Your code here...
+    const drowdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
+    const drowdownMenuSelector = drowdownRootSelector+" > div > div > div";
+
     function waitForElement(selector = null, root = document) {
         return new Promise((resolve, reject) => {
             let timer;
@@ -31,7 +35,6 @@
                     observer.disconnect();
                     window.clearTimeout(timer);
                     resolve(elementToFind);
-                    //console.log(elementToFind);
                     return;
                 }
             }
@@ -45,94 +48,56 @@
             }
 
             const observer = new MutationObserver(observerCallback);
-            //console.log("observing:", selector);
             observer.observe(root, observerConfig);
 
             // initial check to return if the element already exists on page
-            //checkForElement(observer);
-
-            /*             // timeout the observer after 10 seconds
-            timer = setTimeout(() => {
-                console.log("couldn't find: ", selector);
-                observer.disconnect();
-                reject('Stopping observation for element.');
-            }, 10000); */
+            checkForElement(observer);
         });
     }
 
-    async function newToken(url) {
-        if (!url) {
-            alert("Please fill out client URL first.");
-            return;
-        } else {
-            const clienturl = "https://" + url + ".openasset.com";
-            await navigator.clipboard.writeText(
-                "new Rest.JWT().getOAServiceJWT().then(data => console.log(data.jwt))"
-            );
-            window.open(clienturl, "_blank", "noreferrer");
-        }
-    }
-
     async function copyJwtToClipboard() {
+        console.log("Fetching JWT:");
         fetch(`${window.location.origin}/REST/1/JWT?service.openasset=true&expiry=86400`)
             .then((response) => response.json())
             .then((data) => {
             console.log(data.jwt);
             navigator.clipboard.writeText(data.jwt);
+            console.log("Copied to clipboard!");
         });
     }
 
-
- async function onUrlChange() {
-
-    let test = await waitForElement('div.KtG-oLHCHxUYnSFLrZYGc > div > div > div');
-    var dropDown = document.querySelector("div.KtG-oLHCHxUYnSFLrZYGc > div > div > div");
-    // var jwtTemp = dropDown.firstChild.cloneNode(true);
-    var jwtTemp = dropDown.querySelector("button").cloneNode(true);
-    jwtTemp.id = "jwt"
-    // jwtTemp.href = "/REST/1/JWT?service.openasset=true&expiry=86400"
-    // jwtTemp.href = "";
-    jwtTemp.onclick = function(){copyJwtToClipboard()};
-    dropDown.insertBefore(jwtTemp, dropDown.lastChild);
-    jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
-    console.log("test");
-
-
-    const dropdownObserverConfig = {
-        attributes: false,
-        childList: true,
-        subtree: false
-    };
-
-    function dropdownObserverCallback(mutationList, observer) {
-        for (const mutation of mutationList) {
-            if (mutation.type === 'childList') {
-                console.log("test 2");
-                var dropDown = document.querySelector("div.KtG-oLHCHxUYnSFLrZYGc > div > div > div");
-                if (dropDown){
-                    // jwtTemp = dropDown.querySelector("button").cloneNode(true);
-                    if (!dropDown.querySelector('#jwt')){
-                        jwtTemp = dropDown.querySelector("button").cloneNode(true);
-                    }
-                    dropDown.insertBefore(jwtTemp, dropDown.lastChild);
-                    jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
-                    // jwtTemp.href = "/REST/1/JWT?service.openasset=true&expiry=86400"
-                    jwtTemp.href = "";
-                    jwtTemp.id = "jwt"
-                    jwtTemp.onclick = function(){copyJwtToClipboard()};
-                    console.log("jwtTemp", jwtTemp);
-                    console.log("dropDown", dropDown);
-                }
-            }
+    async function insertJwtOption(dropDown) {
+        if (dropDown){
+            console.log("inserting JWT option");
+            var jwtTemp = dropDown.querySelector("button").cloneNode(true);
+            jwtTemp.id = "jwt"
+            jwtTemp.querySelector("span:last-child").innerText = "OA JWT"
+            jwtTemp.onclick = function(){copyJwtToClipboard()};
+            dropDown.insertBefore(jwtTemp, dropDown.lastChild);
         }
     }
 
-    const dropdownObserver = new MutationObserver(dropdownObserverCallback);
-    console.log("observing:", dropDown);
 
-    dropdownObserver.observe(document.querySelector("div.KtG-oLHCHxUYnSFLrZYGc:last-child"), dropdownObserverConfig);
-}
+    async function onUrlChange() {
 
+        let test = await waitForElement(drowdownRootSelector);
+        var dropDown = document.querySelector(drowdownMenuSelector);
 
-onUrlChange();
+        function dropdownObserverCallback(mutationList, observer) {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    dropDown = document.querySelector(drowdownMenuSelector);
+                    insertJwtOption(dropDown);
+                }
+            }
+        }
+        const dropdownObserver = new MutationObserver(dropdownObserverCallback);
+        console.log("Observing Dropdown for JWT option:");
+
+        const dropdownObserverConfig = {childList: true};
+        var drowdownRoot = document.querySelector(drowdownRootSelector)
+        dropdownObserver.observe(drowdownRoot, dropdownObserverConfig);
+    }
+
+    onUrlChange();
 })();
