@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Success Help Site Helper
 // @namespace    https://success.openasset.com/
-// @version      0.1
+// @version      0.2
 // @description  Adds the ability to easily obtain the hash urls to link to specific sections of articles
 // @author       You
 // @match        https://success.openasset.com/*
@@ -14,22 +14,25 @@
 (function() {
     'use strict';
 
-    function addUrlHash(element){
-        let anchorHash = document.createElement('a');
+    function addUrlHash(element) {
+        if (element.id) {
+            let anchorHash = document.createElement('a');
 
-        anchorHash.href = '#'+element.id;
-        anchorHash.innerHTML = element.innerHTML;
-        anchorHash.style = "text-decoration: none;";
+            anchorHash.href = '#'+element.id;
+            anchorHash.innerHTML = element.innerHTML;
+            anchorHash.style = "text-decoration: none;";
 
-        element.innerHTML = "";
+            element.innerHTML = "";
 
-        anchorHash.onmouseover = function changeColorOver(){anchorHash.style.color = "orange";}
-        anchorHash.onmouseout = function changeColorOut(){anchorHash.style.color = "#3c3c3c";}
+            anchorHash.onmouseover = function changeColorOver(){anchorHash.style.color = "orange";}
+            anchorHash.onmouseout = function changeColorOut(){anchorHash.style.color = "#3c3c3c";}
 
-        element.append(anchorHash);
+            element.append(anchorHash);
+        }
     }
 
-    if (window.location.pathname.startsWith('/en/articles/')){
+    if (window.location.pathname.startsWith('/en/articles/')) {
+        document.querySelectorAll("h1").forEach(addUrlHash);
         document.querySelectorAll("h2").forEach(addUrlHash);
         document.querySelectorAll("h3").forEach(addUrlHash);
     }
