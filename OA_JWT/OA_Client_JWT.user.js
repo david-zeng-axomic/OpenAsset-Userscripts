@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Get Client JWT
 // @namespace    openasset.com
-// @version      0.2
+// @version      0.3
 // @description  Adds an additional user dropdown option that copies a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
@@ -84,6 +84,13 @@
             console.log(data.jwt);
             navigator.clipboard.writeText(data.jwt);
             console.log("Copied to clipboard!");
+
+            // fade in span for 1.5 seconds and fade out
+            let copySpan = document.querySelector("#copied");
+            copySpan.style.opacity = 1;
+            setTimeout( function() {
+                copySpan.style.opacity = 0;
+            }, 1500);
         });
     }
 
@@ -92,10 +99,34 @@
         var dropDown = document.querySelector(dropdownMenuSelector);
         if (dropDown){
             if (!dropDown.querySelector("#jwtButton")){
+                // deep-copy existing dropdown buttons
                 var jwtButton = dropDown.querySelector("button").cloneNode(true);
                 jwtButton.id = "jwtButton"
-                jwtButton.querySelector("span:last-child").innerText = "OA JWT"
+                jwtButton.querySelector("span:last-child").innerText = "Copy JWT"
                 jwtButton.onclick = function(){copyJwtToClipboard()};
+
+                // update button svg to use copy icon
+                jwtButton.querySelector("svg").innerHTML = `<path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>`;
+
+                // create hidden span element for click feedback
+                var copySpan = document.createElement("span");
+                copySpan.innerText = "Copied!";
+                copySpan.id = "copied";
+                copySpan.style = `
+                    position: absolute;
+                    display: inline-block;
+                    left: 8.25em;
+                    padding: 4px;
+                    border-radius: 5px;
+                    color: white;
+                    background-color: black;
+                    font-size: small;
+                    opacity: 0;
+                    transition: opacity 0.25s;
+                    z-index: 10;
+                `;
+                jwtButton.appendChild(copySpan);
 
                 dropDown.insertBefore(jwtButton, dropDown.lastChild);
             }
