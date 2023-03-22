@@ -114,9 +114,8 @@
                 copySpan.innerText = "Copied!";
                 copySpan.id = "copied";
                 copySpan.style = `
-                    position: absolute;
                     display: inline-block;
-                    left: 8.25em;
+                    margin-left: 0.5em;
                     padding: 4px;
                     border-radius: 5px;
                     color: white;
