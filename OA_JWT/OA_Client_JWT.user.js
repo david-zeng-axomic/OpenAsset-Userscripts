@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Get Client JWT
 // @namespace    openasset.com
-// @version      0.3
+// @version      0.4
 // @description  Adds an additional user dropdown option that copies a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
@@ -115,7 +115,8 @@
                 copySpan.id = "copied";
                 copySpan.style = `
                     display: inline-block;
-                    margin-left: 0.5em;
+                    margin-left: 0.25em;
+                    margin-right: -0.5em;
                     padding: 4px;
                     border-radius: 5px;
                     color: white;
