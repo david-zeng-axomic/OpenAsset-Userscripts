@@ -13,11 +13,13 @@ ___
 
 ## Prerequisites
 
-An userscript management extension will need to be installed in your browser in order to use this.
+An userscript management extension **must** be installed in your browser in order for these script to work.
 
-I generally use and test with [Tampermonkey](https://www.tampermonkey.net):
+I generally use [Tampermonkey](https://www.tampermonkey.net):
 - [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+
+Any other userscript extension can also be used but these scripts have only been tested on Tampermonkey.
 
 Once the extension is set up, you should be able to manually add and edit scripts or access a raw `user.js` file link and have userscripts be auto-detected by the extension for installation.
 
@@ -25,7 +27,7 @@ To install a script you can manually navigate to a script file in the repo and c
 
 ___
 
-## Success Help Site Helper
+### Success Help Site Helper
 This script makes header tags on the OA Success help site articles clickable. This makes it easier to link to specific sections of a long success article: https://success.openasset.com
 
 ### [Install](https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/Success%20Help%20Site/Success_Help_Site_Helper.user.js)
@@ -35,7 +37,7 @@ This script makes header tags on the OA Success help site articles clickable. Th
 
 ___
 
-## OA Tab Title Change
+### OA Tab Title Change
 
 This script replaces "OpenAsset - " in the browser tab titles with "{subdomain} | " instead. Makes it easier to keep track of which OA instance the tab is for with just the tab title
 
@@ -46,7 +48,7 @@ This script replaces "OpenAsset - " in the browser tab titles with "{subdomain} 
 
 ___
 
-## OA Client JWT
+### OA Client JWT
 
 This script adds an additional user dropdown menu option to fetch an OA JWT that can be used as a bearer token for the REST api. Clicking the button will fetch a JWT via the REST api and save the jwt response in the clipboard and output it to the console logs.
 
@@ -56,7 +58,7 @@ This script adds an additional user dropdown menu option to fetch an OA JWT that
 > This uses two mutation observers to wait for the dropdown menu option to appear and to observer the dropdown menu for when it is opened. When the menu is opened a button for the OA JWT is injected. The push and pop history states changes are also checked to allow for this to continue working even after navigating to different pages.
 ___
 
-## REST Button
+### REST Button
 Adds a "REST" button to certain pages to make it easier to navigate to or retrieve the REST api url from the front-end of OA.
 
 > **IMPORTANT: This still needs to be updated to be better.**
