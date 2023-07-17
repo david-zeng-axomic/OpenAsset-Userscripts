@@ -1,14 +1,10 @@
 // ==UserScript==
 // @name         OA REST Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
-// @version      0.6
-// @description  Inject OA REST button to /page/projects and /page/employees
-// @author       DZE + JSU
-// @match        *://*/page/project/*
+// @version      0.7
+// @description  Inject REST API button to various OA pages
+// @author       DZE
 // @match        *://*.openasset.com/*
-// @match        *://*/page/employee/*
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
-// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
 // @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
 // @grant        GM_addStyle
@@ -63,65 +59,85 @@
             }, 5000);
         });
     }
-    function createButton(){
-        //console.log("script running");
 
-        // Your code here...
-        let myButton = document.createElement("input"),
-            url_split,
-            rest_endpoint,
-            buttons_class_string,
-            placeHolder,
-            button_anchor,
-            clone;
+    async function createButton(restURL, parentElement, elementToAdd){
 
-        if (window.location.href.includes("/page/project/")){
-            url_split = window.location.href.split("/page/project/");
-            rest_endpoint = 'Projects';
-            buttons_class_string = '.qJModJzSC8ikklGUCh-MK';
-            console.log("project page");
-        } else if (window.location.href.includes("/page/employee/")){
-            url_split = window.location.href.split("/page/employee/");
-            rest_endpoint = 'Employees';
-            buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
-        } else if (window.location.href.includes("/Page/Users")){
-            console.log("test");
-            url_split = window.location.href.split("/Page/Users");
-            rest_endpoint = 'Users';
-            buttons_class_string = '.contentFixed';
-            var userPage = true;
-        }
+        elementToAdd.id = "rest"
+        elementToAdd.href = restURL
+        elementToAdd.title = "REST";
+        elementToAdd.dataset.title = "REST";
+        elementToAdd.innerText = "REST";
 
-        //waitForKeyElements (buttons_class_string, actionFunction);
+        // projects and employees make sure that the element highlighting class is not there
+        // elementToAdd.style.removeProperty('border');
+        elementToAdd.classList.remove("_2NvvM0jkx7ejB9_0l1zUwk")
 
-        async function actionFunction () {
-            console.log(buttons_class_string);
-            await waitForElement(buttons_class_string);
-            console.log("got past wait for element");
-            //-- DO WHAT YOU WANT TO THE TARGETED ELEMENTS HERE.
-            // create the rest button
-            placeHolder = document.getElementsByClassName(buttons_class_string.replace(".",""))[0];
-            if(userPage){
-                var divider = placeHolder.getElementsByClassName('divider');
-                var button = placeHolder.getElementsByClassName('clearSelection');
-                console.log(button);
-                //rbutton resizeable menuItem  clearSelection
-            }
-            console.log(placeHolder);
-            clone = placeHolder.lastChild.cloneNode(true);
-            //console.log(clone);
-            clone.href = url_split[0] + '/REST/1/'+rest_endpoint+'/' + url_split[1].split('/')[0];
-            clone.dataset.title = "REST";
-            clone.innerText = "REST";
-            clone.style.removeProperty('border');
-            placeHolder.append(clone);
-        }
-        actionFunction();
+        parentElement.append(elementToAdd);
     }
 
 
     async function onUrlChange() {
-        createButton();
+        if (location.host == "whatsnew.openasset.com"){
+            return;
+        }
+        console.log(location.href);
+
+        let restEndpoint,
+            buttons_class_string,
+            additionalQueryParams = "",
+            elementToAdd;
+
+        let urlPath = window.location.pathname
+        let urlPageMatch = urlPath.split()
+
+        if (urlPath.startsWith("/page/project/")){
+            restEndpoint = 'Projects';
+            buttons_class_string = '.qJModJzSC8ikklGUCh-MK';
+
+        } else if (urlPath.startsWith("/page/employee/")){
+            restEndpoint = 'Employees';
+            buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
+
+        } else if (urlPath.startsWith("/page/files/")){
+            restEndpoint = 'Files';
+            buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
+            additionalQueryParams = "?withEmbeddedFields=1&withEmbeddedKeywords=1";
+
+        } else if (urlPath.startsWith("/Page/Users")){
+            restEndpoint = 'Users';
+            buttons_class_string = '.contentFixed';
+
+        } else if (urlPath.startsWith("/page/user-management")){
+            restEndpoint = 'Users';
+            buttons_class_string = '._1iBQaWO-K9V9sp63aHoCcc';
+
+        } else {
+            return;
+        }
+
+        let restObjID = urlPath.split('/')[3] || "";
+        let restURL = `${location.origin}/REST/1/${restEndpoint}/${restObjID}`+additionalQueryParams
+
+        await waitForElement(buttons_class_string);
+        console.log(buttons_class_string);
+
+        if (document.querySelector("#rest")) {
+            document.querySelector("#rest").remove()
+        }
+
+        let parentElement = document.querySelector(buttons_class_string);
+        if (parentElement.querySelector("a")) {
+            elementToAdd = parentElement.querySelector("a").cloneNode(true);
+        } else {
+            elementToAdd = document.createElement("a");
+            elementToAdd.style.fontSize = "large";
+            elementToAdd.style.padding = "8px";
+            elementToAdd.style.borderRadius = "5px";
+            elementToAdd.style.border = "thin solid grey";
+            elementToAdd.style.backgroundColor = "rgba(71,71,71,.06)";
+        }
+
+        createButton(restURL, parentElement, elementToAdd);
     }
 
     function fireOnNavigation() {
@@ -133,13 +149,24 @@
     // override history states to run script when url changes
     const pushState = history.pushState;
     history.pushState = function () {
-        //console.log("pushState");
+        console.log("pushState");
         var tempPushState = pushState.apply(history, arguments)
         fireOnNavigation();
         return tempPushState;
     }
 
-    //window.addEventListener('popstate', () => {console.log("popstate"); fireOnNavigation()});
+    // continue overriding if replaceState is activated
+    const replaceState = history.replaceState;
+    history.replaceState = function () {
+        console.log("replaceState");
+        var tempReplaceState = replaceState.apply(history, arguments)
+        fireOnNavigation();
+        return tempReplaceState;
+    }
+
+    // activate script when popState runs.
+    window.addEventListener('popstate', () => {console.log("popstate"); fireOnNavigation()});
 
     fireOnNavigation();
+
 })();
