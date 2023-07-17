@@ -101,7 +101,7 @@
         } else if (urlPath.startsWith("/page/files/")){
             restEndpoint = 'Files';
             buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
-            additionalQueryParams = "?withEmbeddedFields=1&withEmbeddedKeywords=1";
+            //additionalQueryParams = "?withEmbeddedFields=1&withEmbeddedKeywords=1";
 
         } else if (urlPath.startsWith("/Page/Users")){
             restEndpoint = 'Users';
