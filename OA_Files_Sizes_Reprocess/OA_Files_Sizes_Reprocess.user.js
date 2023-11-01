@@ -2,7 +2,7 @@
 // @name         OA Files Sizes Reprocess Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
 // @version      0.1
-// @description  Inject REST API button to various OA pages
+// @description  Inject "Open size in new tab" and "reprocess size" buttons for the file info sizes tab
 // @author       DZE
 // @match        *://*.openasset.com/*
 // @grant        none
@@ -14,10 +14,11 @@
 (function() {
     'use strict';
 
-    let sizesTabClassString = '._1kpF1m3JPv86giDy6zDhMI';
-    let sizeRowsClass = "._3Pq1mPq-ZorkTEuhR-SF7D";
-    let sizeRowTextClass = "._2MDylJr6PDV2ekClOeMRtB";
-    let sizeButtonsdivClass = "._30xcf_ZsfuPk0Al9ZEEjLy";
+    // css class selector strings:
+    let sizesTabClassStr = '._1kpF1m3JPv86giDy6zDhMI'; // sizes tab table
+    let sizeRowsClassStr = "._3Pq1mPq-ZorkTEuhR-SF7D"; // individual size row
+    let sizeRowTextClassStr = "._2MDylJr6PDV2ekClOeMRtB"; // size name text div
+    let sizeButtonsdivClassStr = "._30xcf_ZsfuPk0Al9ZEEjLy"; // div for size row buttons
 
     let newTabSvgPath = '<path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zM48 92c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v24c0 6.6-5.4 12-12 12H60c-6.6 0-12-5.4-12-12V92zm416 334c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V168h416v258zm0-310c0 6.6-5.4 12-12 12H172c-6.6 0-12-5.4-12-12V92c0-6.6 5.4-12 12-12h280c6.6 0 12 5.4 12 12v24z"></path>'
     let reprocessSvgPath = '<path xmlns="http://www.w3.org/2000/svg" d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/>'
@@ -124,7 +125,7 @@
         let urlPath = window.location.pathname;
         if (urlPath.startsWith("/page/files/")){
             // wait for sizes tab to be active
-            let sizesTab = await waitForElement(sizesTabClassString);
+            let sizesTab = await waitForElement(sizesTabClassStr);
 
             // api call to generate object for mapping size names to size ids
             var fileSizes = {};
@@ -138,13 +139,13 @@
             })
 
             // loop through each size row in the sizes tab
-            document.querySelectorAll(sizeRowsClass).forEach((sizeRow) => {
-                let sizeRowText = sizeRow.querySelector(sizeRowTextClass);
+            document.querySelectorAll(sizeRowsClassStr).forEach((sizeRow) => {
+                let sizeRowText = sizeRow.querySelector(sizeRowTextClassStr);
                 let sizeName = sizeRowText.innerText.split("\n").splice(-1)[0];
                 let sizeId = fileSizes[sizeName];
 
                 // only need to add new buttons for created sizes
-                let sizeButtonsdiv = sizeRow.querySelector(sizeButtonsdivClass);
+                let sizeButtonsdiv = sizeRow.querySelector(sizeButtonsdivClassStr);
                 if (sizeButtonsdiv){
                     // add size in new tab button
                     let sizeInNewTabButton = createSizeInNewTabButton(sizeButtonsdiv, sizeName);
