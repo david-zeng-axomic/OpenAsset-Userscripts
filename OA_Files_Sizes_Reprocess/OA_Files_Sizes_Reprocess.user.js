@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Files Sizes Reprocess Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
-// @version      0.2
+// @version      0.3
 // @description  Inject "Open size in new tab" and "reprocess size" buttons for the file info sizes tab
 // @author       DZE
 // @match        *://*.openasset.com/*
@@ -123,6 +123,9 @@
             reprocessButton.querySelector("svg").innerHTML = reprocessSuccessSvgPath;
             reprocessButton.querySelector("svg").setAttribute("viewBox", "0 -960 960 960");
             reprocessButton.querySelector("svg").setAttribute("fill", "green");
+
+            // disable button if reprocess has started
+            reprocessButton.disabled = true;
         })
             .catch((error) => { // failed reprocess
             console.log(error);
