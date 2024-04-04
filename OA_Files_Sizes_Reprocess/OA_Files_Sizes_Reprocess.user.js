@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Files Sizes Reprocess Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
-// @version      0.3
+// @version      0.4
 // @description  Inject "Open size in new tab" and "reprocess size" buttons for the file info sizes tab
 // @author       DZE
 // @match        *://*.openasset.com/*
@@ -74,6 +74,7 @@
 
     async function reprocessSize(reprocessButton, sizeId, fileSizes) {
         console.log("Reprocessing Size:", sizeId);
+        let fileId = window.location.pathname.split("/")[3];
 
         let jsonBody = JSON.stringify([
             {
@@ -84,6 +85,32 @@
 
         // if original size, reprocess all existing sizes
         if (sizeId == 1){
+            // reset processing failures and recheck for the file
+            let resetProcessingJsonBody = JSON.stringify([{"id": fileId,"processing_failures": 0, "recheck": 1}]);
+            fetch(
+                `${window.location.origin}/REST/1/Files`,
+                {
+                    method: "PUT",
+                    body: resetProcessingJsonBody,
+                })
+                .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else{
+                    return response.text().then(text => { throw new Error(text) });
+                }
+            })
+                .then((data) => { // successful PUT
+                console.log(data);
+            })
+                .catch((error) => { // failed PUT
+                console.log(error);
+                reprocessButton.querySelector("svg").innerHTML = reprocessFailedSvgPath;
+                reprocessButton.querySelector("svg").setAttribute("viewBox", "0 -960 960 960");
+                reprocessButton.querySelector("svg").setAttribute("fill", "red");
+            });
+
+            // setup json body for reprocessing all sizes
             let existingSizes = []
             document.querySelectorAll(sizeRowsClassStr).forEach((sizeRow) => {
                 let sizeRowText = sizeRow.querySelector(sizeRowTextClassStr);
@@ -102,7 +129,6 @@
             jsonBody = JSON.stringify(existingSizes);
         }
 
-        let fileId = window.location.pathname.split("/")[3];
         console.log("Reprocessing Size:");
         console.log("Payload:", jsonBody);
         fetch(
