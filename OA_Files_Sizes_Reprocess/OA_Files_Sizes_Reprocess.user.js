@@ -5,6 +5,7 @@
 // @description  Inject "Open size in new tab" and "reprocess size" buttons for the file info sizes tab
 // @author       DZE
 // @match        *://*.openasset.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=openasset.com
 // @grant        none
 // @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/OA_Files_Sizes_Reprocess/OA_Files_Sizes_Reprocess.user.js
 // @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/OA_Files_Sizes_Reprocess/OA_Files_Sizes_Reprocess.user.js
