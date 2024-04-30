@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA Get Client JWT
 // @namespace    openasset.com
-// @version      0.4
+// @version      0.5
 // @description  Adds an additional user dropdown option that copies a JWT to clipboard
 // @author       DZE
 // @match        https://*.openasset.com/*
@@ -16,7 +16,7 @@
     'use strict';
 
     // These may need to change if Front-End UI breaks from new update
-    var dropdownRootSelector = "div.KtG-oLHCHxUYnSFLrZYGc:last-child"
+    var dropdownRootSelector = "div.MribkJvMqqo0kKQtnYj2:last-child"
     var dropdownMenuSelector = dropdownRootSelector+" > div > div > div";
 
 
