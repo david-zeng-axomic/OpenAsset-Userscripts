@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OA REST Button
 // @namespace    https://github.com/david-zeng-axomic/OpenAsset-Userscripts
-// @version      0.7
+// @version      0.8
 // @description  Inject REST API button to various OA pages
 // @author       DZE
 // @match        *://*.openasset.com/*
@@ -92,15 +92,15 @@
 
         if (urlPath.startsWith("/page/project/")){
             restEndpoint = 'Projects';
-            buttons_class_string = '.qJModJzSC8ikklGUCh-MK';
+            buttons_class_string = '.YcNBGatz6qt_kUsFXROt';
 
         } else if (urlPath.startsWith("/page/employee/")){
             restEndpoint = 'Employees';
-            buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
+            buttons_class_string = '.YcNBGatz6qt_kUsFXROt';
 
         } else if (urlPath.startsWith("/page/files/")){
             restEndpoint = 'Files';
-            buttons_class_string = '._1KR4uOJTCX2WL2RLHNvC8i';
+            buttons_class_string = '.YcNBGatz6qt_kUsFXROt';
             //additionalQueryParams = "?withEmbeddedFields=1&withEmbeddedKeywords=1";
 
         } else if (urlPath.startsWith("/Page/Users")){
@@ -109,7 +109,7 @@
 
         } else if (urlPath.startsWith("/page/user-management")){
             restEndpoint = 'Users';
-            buttons_class_string = '._1iBQaWO-K9V9sp63aHoCcc';
+            buttons_class_string = '.DLo6nvvq1dUOHHs8bw5r';
 
         } else {
             return;
@@ -128,7 +128,7 @@
         let parentElement = document.querySelector(buttons_class_string);
         if (parentElement.querySelector("a")) {
             elementToAdd = parentElement.querySelector("a").cloneNode(true);
-        } else {
+        } else { // for "Users" pages
             elementToAdd = document.createElement("a");
             elementToAdd.style.fontSize = "large";
             elementToAdd.style.padding = "8px";
