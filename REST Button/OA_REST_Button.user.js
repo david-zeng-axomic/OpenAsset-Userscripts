@@ -5,10 +5,9 @@
 // @description  Inject REST API button to various OA pages
 // @author       DZE
 // @match        *://*.openasset.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=openasset.com
 // @updateURL    https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
 // @downloadURL  https://github.com/david-zeng-axomic/OpenAsset-Userscripts/raw/main/REST%20Button/OA_REST_Button.user.js
-// @grant        GM_addStyle
-
 // @run-at      document-idle
 // ==/UserScript==
 
